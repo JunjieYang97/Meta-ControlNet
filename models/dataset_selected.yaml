@@ -1,0 +1,31 @@
+data:
+  target: model_train.DataModuleFromConfig
+  params:
+    batch_size: 2
+    num_workers: 2
+    train:
+      target: created_dataset.MyDataset
+      params:
+        path: /clip_data/clip-filtered-dataset
+        split: train
+        min_resize_res: 256
+        max_resize_res: 256
+        crop_res: 256
+        flip_prob: 0.5
+        task_list:
+          - hed
+          - seg
+          - normal
+    validation:
+      target: created_dataset.MyDataset
+      params:
+        path: /clip_data/clip-filtered-dataset
+        split: val
+        min_resize_res: 256
+        max_resize_res: 256
+        crop_res: 256
+        task_list:
+          - hed
+          - seg
+          - normal
+        
