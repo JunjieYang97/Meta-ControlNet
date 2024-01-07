@@ -120,22 +120,22 @@ class DataModuleFromConfig(pl.LightningDataModule):
 
 def main():
     # Create the argument parser
-    parser = argparse.ArgumentParser(description="Controlnet finetuning")
+    parser = argparse.ArgumentParser(description="Meta Controlnet")
 
     parser.add_argument("-n", "--name", type=str, default="test",
         nargs="?", help="postfix for logdir")
 
-    parser.add_argument('--auto_path', type=str, default="",
-                        help="pretrained auto-encoder path")
+    # parser.add_argument('--auto_path', type=str, default="",
+    #                     help="pretrained auto-encoder path")
     
     parser.add_argument('--data_config', type=str, default="models/dataset_seg.yaml",
-                        help="pretrained auto-encoder path")
+                        help="pretrained dataset path")
     
     parser.add_argument('--meta_method', type=str, default=None,
                         choices=['maml'], help='if we and how we use meta training')
 
-    parser.add_argument('--freeze', type=int, default=0, help='how many layers been frozen, \
-                        from 1 to 4, 1 means we only freeze middle block, 4 means only finetune first encoder')
+    # parser.add_argument('--freeze', type=int, default=0, help='how many layers been frozen, \
+    #                     from 1 to 4, 1 means we only freeze middle block, 4 means only finetune first encoder')
     
     parser.add_argument('--resume_path', type=str, default=None, help='where we load checkpoint')
 
@@ -185,22 +185,22 @@ def main():
 
     control_state_dict = model.state_dict()
 
-    if len(args.auto_path) == 0:
-        print('vanilla control net')
-    else:
-        # load pretrained autoencoder checkpoint
-        auto_checkpoint = torch.load(args.auto_path)
-        auto_state_dict = auto_checkpoint['state_dict']
+    # if len(args.auto_path) == 0:
+    #     print('vanilla control net')
+    # else:
+    #     # load pretrained autoencoder checkpoint
+    #     auto_checkpoint = torch.load(args.auto_path)
+    #     auto_state_dict = auto_checkpoint['state_dict']
 
-        for name, param in control_state_dict.items():
-            if name.startswith("first_stage_model."):
-                auto_name = name[len("first_stage_model."):]
-                if auto_name in auto_state_dict:
-                    control_state_dict[name] = auto_state_dict[auto_name]
-                else:
-                    print(f"Warning: {auto_name} not found")
-                    raise NotImplementedError
-        model.load_state_dict(control_state_dict)
+    #     for name, param in control_state_dict.items():
+    #         if name.startswith("first_stage_model."):
+    #             auto_name = name[len("first_stage_model."):]
+    #             if auto_name in auto_state_dict:
+    #                 control_state_dict[name] = auto_state_dict[auto_name]
+    #             else:
+    #                 print(f"Warning: {auto_name} not found")
+    #                 raise NotImplementedError
+    #     model.load_state_dict(control_state_dict)
     
     # check meta method
     if args.maml_freeze is None:
